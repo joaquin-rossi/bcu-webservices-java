@@ -1,7 +1,10 @@
 .DS_Store
 .classpath
+.factorypath
 .gradle
 .idea
 .project
+.settings
 .vscode
+bin
 build
