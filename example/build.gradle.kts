@@ -12,11 +12,11 @@ application {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
+        languageVersion = JavaLanguageVersion.of(27)
     }
 }
 
 dependencies {
     implementation(project(":core"))
-    runtimeOnly("com.sun.xml.ws:jaxws-rt:4.0.3")
+    runtimeOnly("com.sun.xml.ws:jaxws-rt:4.0.5")
 }

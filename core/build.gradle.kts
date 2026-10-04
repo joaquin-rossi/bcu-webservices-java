@@ -8,17 +8,17 @@ repositories {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
+        languageVersion = JavaLanguageVersion.of(27)
     }
 }
 
-val jaxwsTools by configurations.creating
+val jaxwsTools = configurations.create("jaxwsTools")
 dependencies {
-    annotationProcessor("org.projectlombok:lombok:1.18.42")
-    compileOnly("org.projectlombok:lombok:1.18.42")
-    implementation("com.sun.xml.ws:jaxws-rt:4.0.3")
+    annotationProcessor("org.projectlombok:lombok:1.18.48")
+    compileOnly("org.projectlombok:lombok:1.18.48")
+    implementation("com.sun.xml.ws:jaxws-rt:4.0.5")
 
-    jaxwsTools("com.sun.xml.ws:jaxws-tools:4.0.3")
+    jaxwsTools("com.sun.xml.ws:jaxws-tools:4.0.5")
 }
 
 fun registerWsImportTask(taskName: String, wsdlUrl: String, pkg: String) =
