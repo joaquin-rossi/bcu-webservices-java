@@ -1,4 +1,3 @@
-
 package bcu.wsdl.ultimocierre;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -9,9 +8,9 @@ import jakarta.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for anonymous complex type</p>.
- *
+ * 
  * <p>The following schema fragment specifies the expected content contained within this class.</p>
- *
+ * 
  * <pre>{@code
  * <complexType>
  *   <complexContent>
@@ -22,10 +21,12 @@ import jakarta.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * }</pre>
+ * 
+ * 
  */
-@XmlAccessorType (XmlAccessType.FIELD)
-@XmlType (name = "")
-@XmlRootElement (name = "wsultimocierre.Execute")
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "")
+@XmlRootElement(name = "wsultimocierre.Execute")
 public class WsultimocierreExecute {
 
 

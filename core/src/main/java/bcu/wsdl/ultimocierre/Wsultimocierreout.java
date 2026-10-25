@@ -1,19 +1,18 @@
-
 package bcu.wsdl.ultimocierre;
 
+import javax.xml.datatype.XMLGregorianCalendar;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlSchemaType;
 import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
  * <p>Java class for wsultimocierreout complex type</p>.
- *
+ * 
  * <p>The following schema fragment specifies the expected content contained within this class.</p>
- *
+ * 
  * <pre>{@code
  * <complexType name="wsultimocierreout">
  *   <complexContent>
@@ -25,35 +24,41 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *   </complexContent>
  * </complexType>
  * }</pre>
+ * 
+ * 
  */
-@XmlAccessorType (XmlAccessType.FIELD)
-@XmlType (name = "wsultimocierreout", propOrder = {
-        "fecha"
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "wsultimocierreout", propOrder = {
+    "fecha"
 })
 public class Wsultimocierreout {
-    
-    @XmlElement (name = "Fecha", required = true, nillable = true)
-    @XmlSchemaType (name = "date")
+
+    @XmlElement(name = "Fecha", required = true, nillable = true)
+    @XmlSchemaType(name = "date")
     protected XMLGregorianCalendar fecha;
-    
+
     /**
      * Gets the value of the fecha property.
-     *
-     * @return possible object is
-     * {@link XMLGregorianCalendar }
+     * 
+     * @return
+     *     possible object is
+     *     {@link XMLGregorianCalendar }
+     *     
      */
     public XMLGregorianCalendar getFecha() {
         return fecha;
     }
-    
+
     /**
      * Sets the value of the fecha property.
-     *
-     * @param value allowed object is
-     *              {@link XMLGregorianCalendar }
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XMLGregorianCalendar }
+     *     
      */
     public void setFecha(XMLGregorianCalendar value) {
         this.fecha = value;
     }
-    
+
 }

@@ -1,4 +1,3 @@
-
 package bcu.wsdl.ultimocierre;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -10,9 +9,9 @@ import jakarta.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for anonymous complex type</p>.
- *
+ * 
  * <p>The following schema fragment specifies the expected content contained within this class.</p>
- *
+ * 
  * <pre>{@code
  * <complexType>
  *   <complexContent>
@@ -24,35 +23,41 @@ import jakarta.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * }</pre>
+ * 
+ * 
  */
-@XmlAccessorType (XmlAccessType.FIELD)
-@XmlType (name = "", propOrder = {
-        "salida"
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "", propOrder = {
+    "salida"
 })
-@XmlRootElement (name = "wsultimocierre.ExecuteResponse")
+@XmlRootElement(name = "wsultimocierre.ExecuteResponse")
 public class WsultimocierreExecuteResponse {
-    
-    @XmlElement (name = "Salida", required = true)
+
+    @XmlElement(name = "Salida", required = true)
     protected Wsultimocierreout salida;
-    
+
     /**
      * Gets the value of the salida property.
-     *
-     * @return possible object is
-     * {@link Wsultimocierreout }
+     * 
+     * @return
+     *     possible object is
+     *     {@link Wsultimocierreout }
+     *     
      */
     public Wsultimocierreout getSalida() {
         return salida;
     }
-    
+
     /**
      * Sets the value of the salida property.
-     *
-     * @param value allowed object is
-     *              {@link Wsultimocierreout }
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Wsultimocierreout }
+     *     
      */
     public void setSalida(Wsultimocierreout value) {
         this.salida = value;
     }
-    
+
 }

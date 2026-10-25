@@ -1,4 +1,3 @@
-
 package bcu.wsdl.monedas;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -9,9 +8,9 @@ import jakarta.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for wsmonedasin complex type</p>.
- *
+ * 
  * <p>The following schema fragment specifies the expected content contained within this class.</p>
- *
+ * 
  * <pre>{@code
  * <complexType name="wsmonedasin">
  *   <complexContent>
@@ -23,28 +22,32 @@ import jakarta.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * }</pre>
+ * 
+ * 
  */
-@XmlAccessorType (XmlAccessType.FIELD)
-@XmlType (name = "wsmonedasin", propOrder = {
-        "grupo"
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "wsmonedasin", propOrder = {
+    "grupo"
 })
 public class Wsmonedasin {
-    
-    @XmlElement (name = "Grupo")
+
+    @XmlElement(name = "Grupo")
     protected byte grupo;
-    
+
     /**
      * Gets the value of the grupo property.
+     * 
      */
     public byte getGrupo() {
         return grupo;
     }
-    
+
     /**
      * Sets the value of the grupo property.
+     * 
      */
     public void setGrupo(byte value) {
         this.grupo = value;
     }
-    
+
 }

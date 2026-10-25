@@ -25,6 +25,10 @@ public enum BcuMonedasRequestGrupo {
     }
     
     public static BcuMonedasRequestGrupo fromValue(byte value) {
-        return BY_VALUE.get(value);
+        var x = BY_VALUE.get(value);
+        if (x == null) {
+            throw new IllegalArgumentException("Valor desconocido para BcuMonedasRequestGrupo: %d".formatted(value));
+        }
+        return x;
     }
 }

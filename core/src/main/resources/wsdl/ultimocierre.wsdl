@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions name="wsultimocierre" targetNamespace="Cotiza" xmlns:wsdlns="Cotiza" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="Cotiza">
+	<types>
+		<schema targetNamespace="Cotiza" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" elementFormDefault="qualified">
+			<complexType name="wsultimocierreout">
+				<sequence>
+					<element name="Fecha" type="xsd:date" nillable="true">
+					</element>
+				</sequence>
+			</complexType>
+			<element name="wsultimocierre.Execute">
+				<complexType>
+					<sequence>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="wsultimocierre.ExecuteResponse">
+				<complexType>
+					<sequence>
+						<element minOccurs="1" maxOccurs="1" name="Salida" type="tns:wsultimocierreout"/>
+					</sequence>
+				</complexType>
+			</element>
+		</schema>
+	</types>
+	<message name="wsultimocierre.ExecuteSoapIn">
+		<part name="parameters" element="tns:wsultimocierre.Execute"/>
+	</message>
+	<message name="wsultimocierre.ExecuteSoapOut">
+		<part name="parameters" element="tns:wsultimocierre.ExecuteResponse"/>
+	</message>
+	<portType name="wsultimocierreSoapPort">
+		<operation name="Execute">
+			<input message="wsdlns:wsultimocierre.ExecuteSoapIn"/>
+			<output message="wsdlns:wsultimocierre.ExecuteSoapOut"/>
+		</operation>
+	</portType>
+	<binding name="wsultimocierreSoapBinding" type="wsdlns:wsultimocierreSoapPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="Execute">
+			<soap:operation soapAction="Cotizaaction/AWSULTIMOCIERRE.Execute"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<service name="wsultimocierre">
+		<port name="wsultimocierreSoapPort" binding="wsdlns:wsultimocierreSoapBinding">
+			<soap:address location="https://cotizaciones.bcu.gub.uy/wscotizaciones/servlet/awsultimocierre"/>
+		</port>
+	</service>
+</definitions>

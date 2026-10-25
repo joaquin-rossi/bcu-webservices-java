@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions name="wsbcumonedas" targetNamespace="Cotiza" xmlns:wsdlns="Cotiza" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="Cotiza">
+	<types>
+		<schema targetNamespace="Cotiza" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" elementFormDefault="qualified">
+			<complexType name="wsmonedasin">
+				<sequence>
+					<element name="Grupo" type="xsd:byte">
+					</element>
+				</sequence>
+			</complexType>
+			<complexType name="wsmonedasout">
+				<sequence>
+					<element minOccurs="0" maxOccurs="unbounded" name="wsmonedasout.Linea" type="tns:wsmonedasout.Linea">
+					</element>
+				</sequence>
+			</complexType>
+			<complexType name="wsmonedasout.Linea">
+				<sequence>
+					<element name="Codigo" type="xsd:short">
+					</element>
+					<element name="Nombre" type="xsd:string">
+					</element>
+				</sequence>
+			</complexType>
+			<element name="wsbcumonedas.Execute">
+				<complexType>
+					<sequence>
+						<element minOccurs="1" maxOccurs="1" name="Entrada" type="tns:wsmonedasin"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="wsbcumonedas.ExecuteResponse">
+				<complexType>
+					<sequence>
+						<element minOccurs="1" maxOccurs="1" name="Salida" type="tns:wsmonedasout"/>
+					</sequence>
+				</complexType>
+			</element>
+		</schema>
+	</types>
+	<message name="wsbcumonedas.ExecuteSoapIn">
+		<part name="parameters" element="tns:wsbcumonedas.Execute"/>
+	</message>
+	<message name="wsbcumonedas.ExecuteSoapOut">
+		<part name="parameters" element="tns:wsbcumonedas.ExecuteResponse"/>
+	</message>
+	<portType name="wsbcumonedasSoapPort">
+		<operation name="Execute">
+			<input message="wsdlns:wsbcumonedas.ExecuteSoapIn"/>
+			<output message="wsdlns:wsbcumonedas.ExecuteSoapOut"/>
+		</operation>
+	</portType>
+	<binding name="wsbcumonedasSoapBinding" type="wsdlns:wsbcumonedasSoapPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="Execute">
+			<soap:operation soapAction="Cotizaaction/AWSBCUMONEDAS.Execute"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<service name="wsbcumonedas">
+		<port name="wsbcumonedasSoapPort" binding="wsdlns:wsbcumonedasSoapBinding">
+			<soap:address location="https://cotizaciones.bcu.gub.uy/wscotizaciones/servlet/awsbcumonedas"/>
+		</port>
+	</service>
+</definitions>

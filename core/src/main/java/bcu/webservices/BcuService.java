@@ -1,9 +1,9 @@
 package bcu.webservices;
 
 public interface BcuService {
-    BcuCotizacionesResponse cotizaciones(BcuCotizacionesRequest cotizacionesRequest) throws BcuCotizacionesException;
+    BcuCotizacionesResponse cotizaciones(BcuCotizacionesRequest cotizacionesRequest);
     
-    BcuMonedasResponse monedas(BcuMonedasRequest monedasRequest) throws BcuMonedasException;
+    BcuMonedasResponse monedas(BcuMonedasRequest monedasRequest);
     
     BcuUltimoCierreResponse ultimoCierre();
 }

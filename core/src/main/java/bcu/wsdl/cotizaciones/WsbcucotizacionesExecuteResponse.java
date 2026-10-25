@@ -1,4 +1,3 @@
-
 package bcu.wsdl.cotizaciones;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -10,9 +9,9 @@ import jakarta.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for anonymous complex type</p>.
- *
+ * 
  * <p>The following schema fragment specifies the expected content contained within this class.</p>
- *
+ * 
  * <pre>{@code
  * <complexType>
  *   <complexContent>
@@ -24,35 +23,41 @@ import jakarta.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * }</pre>
+ * 
+ * 
  */
-@XmlAccessorType (XmlAccessType.FIELD)
-@XmlType (name = "", propOrder = {
-        "salida"
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "", propOrder = {
+    "salida"
 })
-@XmlRootElement (name = "wsbcucotizaciones.ExecuteResponse")
+@XmlRootElement(name = "wsbcucotizaciones.ExecuteResponse")
 public class WsbcucotizacionesExecuteResponse {
-    
-    @XmlElement (name = "Salida", required = true)
+
+    @XmlElement(name = "Salida", required = true)
     protected Wsbcucotizacionesout salida;
-    
+
     /**
      * Gets the value of the salida property.
-     *
-     * @return possible object is
-     * {@link Wsbcucotizacionesout }
+     * 
+     * @return
+     *     possible object is
+     *     {@link Wsbcucotizacionesout }
+     *     
      */
     public Wsbcucotizacionesout getSalida() {
         return salida;
     }
-    
+
     /**
      * Sets the value of the salida property.
-     *
-     * @param value allowed object is
-     *              {@link Wsbcucotizacionesout }
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Wsbcucotizacionesout }
+     *     
      */
     public void setSalida(Wsbcucotizacionesout value) {
         this.salida = value;
     }
-    
+
 }

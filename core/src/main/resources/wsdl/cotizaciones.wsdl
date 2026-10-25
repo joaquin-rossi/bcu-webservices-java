@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions name="wsbcucotizaciones" targetNamespace="Cotiza" xmlns:wsdlns="Cotiza" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="Cotiza">
+	<types>
+		<schema targetNamespace="Cotiza" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" elementFormDefault="qualified">
+			<complexType name="wsbcucotizacionesin">
+				<sequence>
+					<element name="Moneda" type="tns:ArrayOfint">
+					</element>
+					<element name="FechaDesde" type="xsd:date" nillable="true">
+					</element>
+					<element name="FechaHasta" type="xsd:date" nillable="true">
+					</element>
+					<element name="Grupo" type="xsd:byte">
+					</element>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfint">
+				<sequence>
+					<element minOccurs="0" maxOccurs="unbounded" name="item" type="xsd:short">
+					</element>
+				</sequence>
+			</complexType>
+			<complexType name="wsbcucotizacionesout">
+				<sequence>
+					<element name="respuestastatus" type="tns:respuestastatus">
+					</element>
+					<element name="datoscotizaciones" type="tns:datoscotizaciones">
+					</element>
+				</sequence>
+			</complexType>
+			<complexType name="respuestastatus">
+				<sequence>
+					<element name="status" type="xsd:byte">
+					</element>
+					<element name="codigoerror" type="xsd:short">
+					</element>
+					<element name="mensaje" type="xsd:string">
+					</element>
+				</sequence>
+			</complexType>
+			<complexType name="datoscotizaciones">
+				<sequence>
+					<element minOccurs="0" maxOccurs="unbounded" name="datoscotizaciones.dato" type="tns:datoscotizaciones.dato">
+					</element>
+				</sequence>
+			</complexType>
+			<complexType name="datoscotizaciones.dato">
+				<sequence>
+					<element name="Fecha" type="xsd:date" nillable="true">
+					</element>
+					<element name="Moneda" type="xsd:short">
+					</element>
+					<element name="Nombre" type="xsd:string">
+					</element>
+					<element name="CodigoISO" type="xsd:string">
+					</element>
+					<element name="Emisor" type="xsd:string">
+					</element>
+					<element name="TCC" type="xsd:double">
+					</element>
+					<element name="TCV" type="xsd:double">
+					</element>
+					<element name="ArbAct" type="xsd:double">
+					</element>
+					<element name="FormaArbitrar" type="xsd:byte">
+					</element>
+				</sequence>
+			</complexType>
+			<element name="wsbcucotizaciones.Execute">
+				<complexType>
+					<sequence>
+						<element minOccurs="1" maxOccurs="1" name="Entrada" type="tns:wsbcucotizacionesin"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="wsbcucotizaciones.ExecuteResponse">
+				<complexType>
+					<sequence>
+						<element minOccurs="1" maxOccurs="1" name="Salida" type="tns:wsbcucotizacionesout"/>
+					</sequence>
+				</complexType>
+			</element>
+		</schema>
+	</types>
+	<message name="wsbcucotizaciones.ExecuteSoapIn">
+		<part name="parameters" element="tns:wsbcucotizaciones.Execute"/>
+	</message>
+	<message name="wsbcucotizaciones.ExecuteSoapOut">
+		<part name="parameters" element="tns:wsbcucotizaciones.ExecuteResponse"/>
+	</message>
+	<portType name="wsbcucotizacionesSoapPort">
+		<operation name="Execute">
+			<input message="wsdlns:wsbcucotizaciones.ExecuteSoapIn"/>
+			<output message="wsdlns:wsbcucotizaciones.ExecuteSoapOut"/>
+		</operation>
+	</portType>
+	<binding name="wsbcucotizacionesSoapBinding" type="wsdlns:wsbcucotizacionesSoapPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="Execute">
+			<soap:operation soapAction="Cotizaaction/AWSBCUCOTIZACIONES.Execute"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<service name="wsbcucotizaciones">
+		<port name="wsbcucotizacionesSoapPort" binding="wsdlns:wsbcucotizacionesSoapBinding">
+			<soap:address location="https://cotizaciones.bcu.gub.uy/wscotizaciones/servlet/awsbcucotizaciones"/>
+		</port>
+	</service>
+</definitions>

@@ -8,9 +8,16 @@ public record BcuCotizacionesResponseLinea(
         String monedaNombre,
         String monedaCodigoISO,
         String monedaPaisEmisor,
-        double tipoCambioCompra,
-        double tipoCambioVenta,
-        double arbitraje,
+        BigDecimal tipoCambioCompra,
+        BigDecimal tipoCambioVenta,
+        BigDecimal arbitraje,
         BcuCotizacionesResponseFormaArbitrar formaArbitrar
 ) {
+    public BcuCotizacionesResponseLinea {
+        Objects.requireNonNull(fecha, "fecha no puede ser null");
+        Objects.requireNonNull(tipoCambioCompra, "tipoCambioCompra no puede ser null");
+        Objects.requireNonNull(tipoCambioVenta, "tipoCambioVenta no puede ser null");
+        Objects.requireNonNull(arbitraje, "arbitraje no puede ser null");
+        Objects.requireNonNull(formaArbitrar, "formaArbitrar no puede ser null");
+    }
 }

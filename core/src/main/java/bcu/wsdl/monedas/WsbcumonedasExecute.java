@@ -1,4 +1,3 @@
-
 package bcu.wsdl.monedas;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -10,9 +9,9 @@ import jakarta.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for anonymous complex type</p>.
- *
+ * 
  * <p>The following schema fragment specifies the expected content contained within this class.</p>
- *
+ * 
  * <pre>{@code
  * <complexType>
  *   <complexContent>
@@ -24,35 +23,41 @@ import jakarta.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * }</pre>
+ * 
+ * 
  */
-@XmlAccessorType (XmlAccessType.FIELD)
-@XmlType (name = "", propOrder = {
-        "entrada"
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "", propOrder = {
+    "entrada"
 })
-@XmlRootElement (name = "wsbcumonedas.Execute")
+@XmlRootElement(name = "wsbcumonedas.Execute")
 public class WsbcumonedasExecute {
-    
-    @XmlElement (name = "Entrada", required = true)
+
+    @XmlElement(name = "Entrada", required = true)
     protected Wsmonedasin entrada;
-    
+
     /**
      * Gets the value of the entrada property.
-     *
-     * @return possible object is
-     * {@link Wsmonedasin }
+     * 
+     * @return
+     *     possible object is
+     *     {@link Wsmonedasin }
+     *     
      */
     public Wsmonedasin getEntrada() {
         return entrada;
     }
-    
+
     /**
      * Sets the value of the entrada property.
-     *
-     * @param value allowed object is
-     *              {@link Wsmonedasin }
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Wsmonedasin }
+     *     
      */
     public void setEntrada(Wsmonedasin value) {
         this.entrada = value;
     }
-    
+
 }

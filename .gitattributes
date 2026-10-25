@@ -10,3 +10,6 @@
 # Binary files should be left untouched
 *.jar           binary
 
+# Código y WSDL generados
+core/src/main/java/bcu/wsdl/**  linguist-generated=true
+core/src/main/resources/wsdl/** linguist-generated=true
