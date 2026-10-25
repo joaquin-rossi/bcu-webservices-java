@@ -5,81 +5,93 @@ import module java.base;
 import bcu.wsdl.cotizaciones.ArrayOfint;
 import bcu.wsdl.cotizaciones.DatoscotizacionesDato;
 import bcu.wsdl.cotizaciones.Wsbcucotizaciones;
+import bcu.wsdl.cotizaciones.WsbcucotizacionesSoapPort;
 import bcu.wsdl.cotizaciones.WsbcucotizacionesExecute;
 import bcu.wsdl.cotizaciones.WsbcucotizacionesExecuteResponse;
 import bcu.wsdl.cotizaciones.Wsbcucotizacionesin;
 import bcu.wsdl.cotizaciones.Wsbcucotizacionesout;
 import bcu.wsdl.monedas.Wsbcumonedas;
+import bcu.wsdl.monedas.WsbcumonedasSoapPort;
 import bcu.wsdl.monedas.WsbcumonedasExecute;
 import bcu.wsdl.monedas.WsbcumonedasExecuteResponse;
 import bcu.wsdl.monedas.Wsmonedasin;
 import bcu.wsdl.monedas.Wsmonedasout;
 import bcu.wsdl.ultimocierre.Wsultimocierre;
+import bcu.wsdl.ultimocierre.WsultimocierreSoapPort;
 import bcu.wsdl.ultimocierre.WsultimocierreExecute;
 import bcu.wsdl.ultimocierre.WsultimocierreExecuteResponse;
 import bcu.wsdl.ultimocierre.Wsultimocierreout;
+import com.sun.xml.ws.developer.JAXWSProperties;
+import jakarta.xml.ws.BindingProvider;
 import jakarta.xml.ws.WebServiceException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-public class BcuServiceImpl implements BcuService {
-    private final Wsbcucotizaciones cotizacionesService;
-    private final Wsbcumonedas monedasService;
-    private final Wsultimocierre ultimoCierreService;
-
+public final class BcuClient {
+    // Los ports se crean y configuran una sola vez; como su request context no se modifica después, se pueden usar
+    // desde varios hilos.
+    private final WsbcucotizacionesSoapPort cotizacionesPort;
+    private final WsbcumonedasSoapPort monedasPort;
+    private final WsultimocierreSoapPort ultimoCierrePort;
+    
     private final DatatypeFactory datatypeFactory;
-
-    public BcuServiceImpl() {
+    
+    public BcuClient() {
+        this(BcuClientConfig.builder().build());
+    }
+    
+    public BcuClient(BcuClientConfig config) {
+        Objects.requireNonNull(config, "config no puede ser null");
+        
         try {
-            cotizacionesService = new Wsbcucotizaciones();
-            monedasService = new Wsbcumonedas();
-            ultimoCierreService = new Wsultimocierre();
+            cotizacionesPort = configurePort(new Wsbcucotizaciones().getWsbcucotizacionesSoapPort(), config, "awsbcucotizaciones");
+            monedasPort = configurePort(new Wsbcumonedas().getWsbcumonedasSoapPort(), config, "awsbcumonedas");
+            ultimoCierrePort = configurePort(new Wsultimocierre().getWsultimocierreSoapPort(), config, "awsultimocierre");
         } catch (WebServiceException e) {
             throw new BcuException("No se pudieron inicializar los clientes de los webservices del BCU", e);
         }
-
+        
         try {
             datatypeFactory = DatatypeFactory.newInstance();
         } catch (DatatypeConfigurationException e) {
             throw new BcuException("No se pudo inicializar DatatypeFactory", e);
         }
     }
-
-    @Override
+    
     public BcuCotizacionesResponse cotizaciones(BcuCotizacionesRequest cotizacionesRequest) {
         Objects.requireNonNull(cotizacionesRequest, "cotizacionesRequest no puede ser null");
-
+        
         var monedas = new ArrayOfint();
         monedas.getItem().addAll(cotizacionesRequest.monedas());
-
+        
         var cotizacionesIn = new Wsbcucotizacionesin();
         cotizacionesIn.setMoneda(monedas);
         cotizacionesIn.setFechaDesde(toXmlDate(cotizacionesRequest.fechaDesde()));
         cotizacionesIn.setFechaHasta(toXmlDate(cotizacionesRequest.fechaHasta()));
         cotizacionesIn.setGrupo(cotizacionesRequest.grupo().getValue());
-
+        
         var cotizacionesReq = new WsbcucotizacionesExecute();
         cotizacionesReq.setEntrada(cotizacionesIn);
-
+        
         WsbcucotizacionesExecuteResponse cotizacionesExecuteRes;
         try {
-            cotizacionesExecuteRes = cotizacionesService.getWsbcucotizacionesSoapPort().execute(cotizacionesReq);
+            cotizacionesExecuteRes = cotizacionesPort.execute(cotizacionesReq);
         } catch (WebServiceException e) {
             throw new BcuCotizacionesUnknownException("Error invocando el webservice de cotizaciones del BCU", e);
         }
-
+        
         Wsbcucotizacionesout cotizacionesRes = cotizacionesExecuteRes == null ? null : cotizacionesExecuteRes.getSalida();
         if (cotizacionesRes == null) {
             throw new BcuCotizacionesUnknownException("El webservice de cotizaciones del BCU devolvió una respuesta vacía");
         }
-
+        
         var cotizacionesStatus = cotizacionesRes.getRespuestastatus();
         if (cotizacionesStatus == null) {
             throw new BcuCotizacionesUnknownException("El webservice de cotizaciones del BCU devolvió una respuesta sin status");
         }
-
+        
         var codigoError = cotizacionesStatus.getCodigoerror();
         var mensaje = "%s (código de error %d)".formatted(
                 Objects.requireNonNullElse(cotizacionesStatus.getMensaje(), "Sin mensaje"),
@@ -106,40 +118,39 @@ public class BcuServiceImpl implements BcuService {
                     "Status desconocido %d: %s".formatted(cotizacionesStatus.getStatus(), mensaje)
             );
         }
-
+        
         var datos = cotizacionesRes.getDatoscotizaciones() == null
                 ? List.<DatoscotizacionesDato>of()
                 : cotizacionesRes.getDatoscotizaciones().getDatoscotizacionesDato();
-
+        
         return new BcuCotizacionesResponse(
                 datos.stream()
-                        .map(BcuServiceImpl::toCotizacionesResponseLinea)
+                        .map(BcuClient::toCotizacionesResponseLinea)
                         .toList()
         );
     }
-
-    @Override
+    
     public BcuMonedasResponse monedas(BcuMonedasRequest monedasRequest) {
         Objects.requireNonNull(monedasRequest, "monedasRequest no puede ser null");
-
+        
         var monedasIn = new Wsmonedasin();
         monedasIn.setGrupo(monedasRequest.grupo().getValue());
-
+        
         var monedasReq = new WsbcumonedasExecute();
         monedasReq.setEntrada(monedasIn);
-
+        
         WsbcumonedasExecuteResponse monedasExecuteRes;
         try {
-            monedasExecuteRes = monedasService.getWsbcumonedasSoapPort().execute(monedasReq);
+            monedasExecuteRes = monedasPort.execute(monedasReq);
         } catch (WebServiceException e) {
             throw new BcuMonedasUnknownException("Error invocando el webservice de monedas del BCU", e);
         }
-
+        
         Wsmonedasout monedasRes = monedasExecuteRes == null ? null : monedasExecuteRes.getSalida();
         if (monedasRes == null) {
             throw new BcuMonedasUnknownException("El webservice de monedas del BCU devolvió una respuesta vacía");
         }
-
+        
         return new BcuMonedasResponse(
                 monedasRes.getWsmonedasoutLinea()
                         .stream()
@@ -150,33 +161,51 @@ public class BcuServiceImpl implements BcuService {
                         .toList()
         );
     }
-
-    @Override
+    
     public BcuUltimoCierreResponse ultimoCierre() {
         var ultimoCierreReq = new WsultimocierreExecute();
-
+        
         WsultimocierreExecuteResponse ultimoCierreExecuteRes;
         try {
-            ultimoCierreExecuteRes = ultimoCierreService.getWsultimocierreSoapPort().execute(ultimoCierreReq);
+            ultimoCierreExecuteRes = ultimoCierrePort.execute(ultimoCierreReq);
         } catch (WebServiceException e) {
             throw new BcuUltimoCierreUnknownException("Error invocando el webservice de último cierre del BCU", e);
         }
-
+        
         Wsultimocierreout ultimoCierreRes = ultimoCierreExecuteRes == null ? null : ultimoCierreExecuteRes.getSalida();
         if (ultimoCierreRes == null || ultimoCierreRes.getFecha() == null) {
             throw new BcuUltimoCierreUnknownException("El webservice de último cierre del BCU devolvió una respuesta sin fecha");
         }
-
+        
         return new BcuUltimoCierreResponse(toLocalDate(ultimoCierreRes.getFecha()));
     }
-
+    
+    private static <T> T configurePort(T port, BcuClientConfig config, String servlet) {
+        var bindingProvider = (BindingProvider) port;
+        var requestContext = bindingProvider.getRequestContext();
+        
+        requestContext.put(JAXWSProperties.CONNECT_TIMEOUT, (int) config.connectTimeout().toMillis());
+        requestContext.put(JAXWSProperties.REQUEST_TIMEOUT, (int) config.requestTimeout().toMillis());
+        if (config.baseUrl() != null) {
+            requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, config.baseUrl().resolve(servlet).toString());
+        }
+        if (config.sslSocketFactory() != null) {
+            requestContext.put(JAXWSProperties.SSL_SOCKET_FACTORY, config.sslSocketFactory());
+        }
+        if (config.customizer() != null) {
+            config.customizer().accept(bindingProvider);
+        }
+        
+        return port;
+    }
+    
     private static BcuCotizacionesResponseLinea toCotizacionesResponseLinea(DatoscotizacionesDato dato) {
         if (dato.getFecha() == null) {
             throw new BcuCotizacionesUnknownException(
                     "El webservice de cotizaciones del BCU devolvió una cotización sin fecha para la moneda %d".formatted(dato.getMoneda())
             );
         }
-
+        
         BcuCotizacionesResponseFormaArbitrar formaArbitrar;
         try {
             formaArbitrar = BcuCotizacionesResponseFormaArbitrar.fromValue(dato.getFormaArbitrar());
@@ -187,7 +216,7 @@ public class BcuServiceImpl implements BcuService {
                     e
             );
         }
-
+        
         // El WSDL declara los valores como xs:double; BigDecimal.valueOf usa la representación decimal más corta
         // del double, que coincide con el valor enviado por el BCU.
         return new BcuCotizacionesResponseLinea(
@@ -202,7 +231,7 @@ public class BcuServiceImpl implements BcuService {
                 formaArbitrar
         );
     }
-
+    
     private XMLGregorianCalendar toXmlDate(LocalDate fecha) {
         return datatypeFactory.newXMLGregorianCalendarDate(
                 fecha.getYear(),
@@ -211,7 +240,7 @@ public class BcuServiceImpl implements BcuService {
                 DatatypeConstants.FIELD_UNDEFINED
         );
     }
-
+    
     private static LocalDate toLocalDate(XMLGregorianCalendar fecha) {
         return LocalDate.of(fecha.getYear(), fecha.getMonth(), fecha.getDay());
     }

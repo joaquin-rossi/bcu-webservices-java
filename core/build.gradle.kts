@@ -1,7 +1,7 @@
 import java.net.URI
 
 plugins {
-    java
+    `java-library`
 }
 
 repositories {
@@ -18,6 +18,7 @@ val jaxwsTools = configurations.create("jaxwsTools")
 dependencies {
     annotationProcessor(libs.lombok)
     compileOnly(libs.lombok)
+    api(libs.jakarta.xml.ws.api)
     implementation(libs.jaxws.rt)
 
     jaxwsTools(libs.jaxws.tools)

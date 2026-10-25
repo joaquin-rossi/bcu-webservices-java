@@ -11,7 +11,7 @@ Adapter de WebServices SOAP expuestos por el BCU para Java 25.
 
 Basado en https://www.bcu.gub.uy/Acerca-de-BCU/RD_Solicitudes_Informacion/Documentaci%C3%B3n-Agregada/PedroScheeffer169.pdf.
 
-* El módulo `core` contiene el adapter `bcu.webservices.BcuService`, que utiliza el código generado por wsimport.
+* El módulo `core` contiene el cliente `bcu.webservices.BcuClient`, que utiliza el código generado por wsimport.
 * El módulo `example` contiene un ejemplo de uso.
 
 Para regenerar el cliente:
@@ -19,6 +19,23 @@ Para regenerar el cliente:
 ```
 gradle :core:wsdl-download :core:wsimport
 ```
+
+## Configuración
+
+`new BcuClient()` usa la configuración por defecto (timeouts de 10 s de conexión y 30 s de lectura). Para cambiarla:
+
+```java
+var bcuClient = new BcuClient(BcuClientConfig.builder()
+        .connectTimeout(Duration.ofSeconds(5))
+        .requestTimeout(Duration.ofSeconds(20))
+        .baseUrl(URI.create("https://cotizaciones.bcu.gub.uy/wscotizaciones/servlet/"))
+        .sslSocketFactory(sslContext.getSocketFactory())
+        // Para lo no contemplado (headers, handlers, propiedades de JAX-WS); se aplica a cada port.
+        .customizer(port -> port.getRequestContext().put(MessageContext.HTTP_REQUEST_HEADERS, headers))
+        .build());
+```
+
+Todos los campos son opcionales.
 
 ## Ejemplos
 

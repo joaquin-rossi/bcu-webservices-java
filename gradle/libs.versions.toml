@@ -1,8 +1,10 @@
 [versions]
+jakarta-xml-ws-api = "4.0.3"
 jaxws = "4.0.5"
 lombok = "1.18.48"
 
 [libraries]
+jakarta-xml-ws-api = { module = "jakarta.xml.ws:jakarta.xml.ws-api", version.ref = "jakarta-xml-ws-api" }
 jaxws-rt = { module = "com.sun.xml.ws:jaxws-rt", version.ref = "jaxws" }
 jaxws-tools = { module = "com.sun.xml.ws:jaxws-tools", version.ref = "jaxws" }
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }

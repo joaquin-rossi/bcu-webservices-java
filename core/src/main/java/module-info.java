@@ -1,5 +1,7 @@
 module bcu.webservices {
     requires com.sun.xml.ws;
+    // BcuClientConfig.customizer expone jakarta.xml.ws.BindingProvider.
+    requires transitive jakarta.xml.ws;
     requires static lombok;
     
     exports bcu.webservices;
