@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test;
 
 class BcuCotizacionesRequestTest {
     private static final LocalDate FECHA = LocalDate.of(2026, 10, 23);
-    private static final BcuCotizacionesRequestGrupo GRUPO =
-            BcuCotizacionesRequestGrupo.COTIZACIONES_LOCALES;
+    private static final BcuCotizacionesRequest.Grupo GRUPO =
+            BcuCotizacionesRequest.Grupo.COTIZACIONES_LOCALES;
 
     @Test
     void copiaLasMonedas() {

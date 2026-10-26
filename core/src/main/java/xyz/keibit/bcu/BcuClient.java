@@ -109,20 +109,20 @@ public final class BcuClient {
         try {
             cotizacionesExecuteRes = cotizacionesPort.execute(cotizacionesReq);
         } catch (WebServiceException e) {
-            throw new BcuCotizacionesUnknownException(
+            throw new BcuCotizacionesException.Unknown(
                     "Error invocando el webservice de cotizaciones del BCU", e);
         }
 
         Wsbcucotizacionesout cotizacionesRes =
                 cotizacionesExecuteRes == null ? null : cotizacionesExecuteRes.getSalida();
         if (cotizacionesRes == null) {
-            throw new BcuCotizacionesUnknownException(
+            throw new BcuCotizacionesException.Unknown(
                     "El webservice de cotizaciones del BCU devolvió una respuesta vacía");
         }
 
         var cotizacionesStatus = cotizacionesRes.getRespuestastatus();
         if (cotizacionesStatus == null) {
-            throw new BcuCotizacionesUnknownException(
+            throw new BcuCotizacionesException.Unknown(
                     "El webservice de cotizaciones del BCU devolvió una respuesta sin status");
         }
 
@@ -137,24 +137,24 @@ public final class BcuClient {
             case 0 -> { // Con Errores
                 throw switch (codigoError) {
                     // case 0 -> No puede pasar porque solo se manda para el status OK
-                    case 100 -> new BcuCotizacionesFechaSinDatosException(mensaje);
-                    case 101 -> new BcuCotizacionesMonedaNoExisteException(mensaje);
-                    case 102 -> new BcuCotizacionesFechaInvalidaException(mensaje);
-                    case 103 -> new BcuCotizacionesRangoFechasInvalidoException(mensaje);
-                    case 104 -> new BcuCotizacionesRangoFechasNoPermitidoException(mensaje);
-                    case 105 -> new BcuCotizacionesGrupoNoExisteException(mensaje);
+                    case 100 -> new BcuCotizacionesException.FechaSinDatos(mensaje);
+                    case 101 -> new BcuCotizacionesException.MonedaNoExiste(mensaje);
+                    case 102 -> new BcuCotizacionesException.FechaInvalida(mensaje);
+                    case 103 -> new BcuCotizacionesException.RangoFechasInvalido(mensaje);
+                    case 104 -> new BcuCotizacionesException.RangoFechasNoPermitido(mensaje);
+                    case 105 -> new BcuCotizacionesException.GrupoNoExiste(mensaje);
                     case 106 ->
-                            new BcuCotizacionesServicioNoDisponiblePorActualizacionException(
+                            new BcuCotizacionesException.ServicioNoDisponiblePorActualizacion(
                                     mensaje);
-                    case 107 -> new BcuCotizacionesServicioNoDisponibleException(mensaje);
+                    case 107 -> new BcuCotizacionesException.ServicioNoDisponible(mensaje);
                     default ->
-                            new BcuCotizacionesUnknownException(
+                            new BcuCotizacionesException.Unknown(
                                     "Código de error desconocido: " + mensaje);
                 };
             }
             case 1 -> {} // OK
             default ->
-                    throw new BcuCotizacionesUnknownException(
+                    throw new BcuCotizacionesException.Unknown(
                             "Status desconocido %d: %s"
                                     .formatted(cotizacionesStatus.getStatus(), mensaje));
         }
@@ -187,13 +187,13 @@ public final class BcuClient {
         try {
             monedasExecuteRes = monedasPort.execute(monedasReq);
         } catch (WebServiceException e) {
-            throw new BcuMonedasUnknownException(
+            throw new BcuMonedasException.Unknown(
                     "Error invocando el webservice de monedas del BCU", e);
         }
 
         Wsmonedasout monedasRes = monedasExecuteRes == null ? null : monedasExecuteRes.getSalida();
         if (monedasRes == null) {
-            throw new BcuMonedasUnknownException(
+            throw new BcuMonedasException.Unknown(
                     "El webservice de monedas del BCU devolvió una respuesta vacía");
         }
 
@@ -201,7 +201,7 @@ public final class BcuClient {
                 monedasRes.getWsmonedasoutLinea().stream()
                         .map(
                                 linea ->
-                                        new BcuMonedasResponseMoneda(
+                                        new BcuMonedasResponse.Moneda(
                                                 linea.getCodigo(), linea.getNombre()))
                         .toList());
     }
@@ -219,14 +219,14 @@ public final class BcuClient {
         try {
             ultimoCierreExecuteRes = ultimoCierrePort.execute(ultimoCierreReq);
         } catch (WebServiceException e) {
-            throw new BcuUltimoCierreUnknownException(
+            throw new BcuUltimoCierreException.Unknown(
                     "Error invocando el webservice de último cierre del BCU", e);
         }
 
         Wsultimocierreout ultimoCierreRes =
                 ultimoCierreExecuteRes == null ? null : ultimoCierreExecuteRes.getSalida();
         if (ultimoCierreRes == null || ultimoCierreRes.getFecha() == null) {
-            throw new BcuUltimoCierreUnknownException(
+            throw new BcuUltimoCierreException.Unknown(
                     "El webservice de último cierre del BCU devolvió una respuesta sin fecha");
         }
 
@@ -256,19 +256,20 @@ public final class BcuClient {
         return port;
     }
 
-    private static BcuCotizacionesResponseLinea toCotizacionesResponseLinea(
+    private static BcuCotizacionesResponse.Linea toCotizacionesResponseLinea(
             DatoscotizacionesDato dato) {
         if (dato.getFecha() == null) {
-            throw new BcuCotizacionesUnknownException(
+            throw new BcuCotizacionesException.Unknown(
                     "El webservice de cotizaciones del BCU devolvió una cotización sin fecha para la moneda %d"
                             .formatted(dato.getMoneda()));
         }
 
-        BcuCotizacionesResponseFormaArbitrar formaArbitrar;
+        BcuCotizacionesResponse.FormaArbitrar formaArbitrar;
         try {
-            formaArbitrar = BcuCotizacionesResponseFormaArbitrar.fromValue(dato.getFormaArbitrar());
+            formaArbitrar =
+                    BcuCotizacionesResponse.FormaArbitrar.fromValue(dato.getFormaArbitrar());
         } catch (IllegalArgumentException e) {
-            throw new BcuCotizacionesUnknownException(
+            throw new BcuCotizacionesException.Unknown(
                     "El webservice de cotizaciones del BCU devolvió una forma de arbitrar desconocida (%d) para la moneda %d"
                             .formatted(dato.getFormaArbitrar(), dato.getMoneda()),
                     e);
@@ -277,7 +278,7 @@ public final class BcuClient {
         // El WSDL declara los valores como xs:double; BigDecimal.valueOf usa la representación
         // decimal más corta
         // del double, que coincide con el valor enviado por el BCU.
-        return new BcuCotizacionesResponseLinea(
+        return new BcuCotizacionesResponse.Linea(
                 toLocalDate(dato.getFecha()),
                 dato.getMoneda(),
                 dato.getNombre(),

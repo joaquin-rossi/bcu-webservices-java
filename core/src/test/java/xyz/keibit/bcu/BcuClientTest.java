@@ -18,7 +18,7 @@ class BcuClientTest {
                     List.of(2225, 9800),
                     LocalDate.of(2026, 10, 22),
                     LocalDate.of(2026, 10, 23),
-                    BcuCotizacionesRequestGrupo.COTIZACIONES_LOCALES);
+                    BcuCotizacionesRequest.Grupo.COTIZACIONES_LOCALES);
 
     private FakeBcuServer server;
     private BcuClient client;
@@ -47,7 +47,7 @@ class BcuClientTest {
     void ultimoCierreSinFecha() {
         server.respond(ULTIMO_CIERRE, fixture("ultimocierre-sin-fecha.xml"));
 
-        var e = assertThrows(BcuUltimoCierreUnknownException.class, client::ultimoCierre);
+        var e = assertThrows(BcuUltimoCierreException.Unknown.class, client::ultimoCierre);
         assertTrue(e.getMessage().contains("sin fecha"), e.getMessage());
     }
 
@@ -55,7 +55,7 @@ class BcuClientTest {
     void ultimoCierreSoapFault() {
         server.respond(ULTIMO_CIERRE, 500, fixture("fault.xml"));
 
-        var e = assertThrows(BcuUltimoCierreUnknownException.class, client::ultimoCierre);
+        var e = assertThrows(BcuUltimoCierreException.Unknown.class, client::ultimoCierre);
         assertNotNull(e.getCause());
     }
 
@@ -66,12 +66,12 @@ class BcuClientTest {
         server.respond(MONEDAS, fixture("monedas.xml"));
 
         var monedas =
-                client.monedas(new BcuMonedasRequest(BcuMonedasRequestGrupo.COTIZACIONES_LOCALES))
+                client.monedas(new BcuMonedasRequest(BcuMonedasRequest.Grupo.COTIZACIONES_LOCALES))
                         .monedas();
 
         assertEquals(8, monedas.size());
-        assertEquals(new BcuMonedasResponseMoneda(501, "PESO ARG.BILLETE"), monedas.getFirst());
-        assertEquals(new BcuMonedasResponseMoneda(9900, "UNIDAD REAJUSTAB"), monedas.getLast());
+        assertEquals(new BcuMonedasResponse.Moneda(501, "PESO ARG.BILLETE"), monedas.getFirst());
+        assertEquals(new BcuMonedasResponse.Moneda(9900, "UNIDAD REAJUSTAB"), monedas.getLast());
         assertTrue(server.lastRequest(MONEDAS).contains("<Grupo>2</Grupo>"));
     }
 
@@ -79,8 +79,8 @@ class BcuClientTest {
     void monedasErrorHttp() {
         server.respond(MONEDAS, 503, "Service Unavailable");
 
-        var request = new BcuMonedasRequest(BcuMonedasRequestGrupo.TODOS);
-        var e = assertThrows(BcuMonedasUnknownException.class, () -> client.monedas(request));
+        var request = new BcuMonedasRequest(BcuMonedasRequest.Grupo.TODOS);
+        var e = assertThrows(BcuMonedasException.Unknown.class, () -> client.monedas(request));
         assertNotNull(e.getCause());
     }
 
@@ -94,7 +94,7 @@ class BcuClientTest {
 
         assertEquals(4, lineas.size());
         assertEquals(
-                new BcuCotizacionesResponseLinea(
+                new BcuCotizacionesResponse.Linea(
                         LocalDate.of(2026, 10, 23),
                         9800,
                         "UNIDAD INDEXADA",
@@ -103,10 +103,10 @@ class BcuClientTest {
                         new BigDecimal("6.6745"),
                         new BigDecimal("6.6745"),
                         new BigDecimal("0.166538"),
-                        BcuCotizacionesResponseFormaArbitrar.DOLARES_EEUU_POR_UNIDAD_DE_MONEDA),
+                        BcuCotizacionesResponse.FormaArbitrar.DOLARES_EEUU_POR_UNIDAD_DE_MONEDA),
                 lineas.getLast());
         assertEquals(
-                BcuCotizacionesResponseFormaArbitrar.UNIDAD_DE_MONEDA_POR_DOLARES_EEUU,
+                BcuCotizacionesResponse.FormaArbitrar.UNIDAD_DE_MONEDA_POR_DOLARES_EEUU,
                 lineas.getFirst().formaArbitrar());
     }
 
@@ -148,16 +148,16 @@ class BcuClientTest {
 
     static Stream<Arguments> cotizacionesErrores() {
         return Stream.of(
-                Arguments.of(100, BcuCotizacionesFechaSinDatosException.class),
-                Arguments.of(101, BcuCotizacionesMonedaNoExisteException.class),
-                Arguments.of(102, BcuCotizacionesFechaInvalidaException.class),
-                Arguments.of(103, BcuCotizacionesRangoFechasInvalidoException.class),
-                Arguments.of(104, BcuCotizacionesRangoFechasNoPermitidoException.class),
-                Arguments.of(105, BcuCotizacionesGrupoNoExisteException.class),
+                Arguments.of(100, BcuCotizacionesException.FechaSinDatos.class),
+                Arguments.of(101, BcuCotizacionesException.MonedaNoExiste.class),
+                Arguments.of(102, BcuCotizacionesException.FechaInvalida.class),
+                Arguments.of(103, BcuCotizacionesException.RangoFechasInvalido.class),
+                Arguments.of(104, BcuCotizacionesException.RangoFechasNoPermitido.class),
+                Arguments.of(105, BcuCotizacionesException.GrupoNoExiste.class),
                 Arguments.of(
-                        106, BcuCotizacionesServicioNoDisponiblePorActualizacionException.class),
-                Arguments.of(107, BcuCotizacionesServicioNoDisponibleException.class),
-                Arguments.of(999, BcuCotizacionesUnknownException.class));
+                        106, BcuCotizacionesException.ServicioNoDisponiblePorActualizacion.class),
+                Arguments.of(107, BcuCotizacionesException.ServicioNoDisponible.class),
+                Arguments.of(999, BcuCotizacionesException.Unknown.class));
     }
 
     @ParameterizedTest
@@ -176,7 +176,7 @@ class BcuClientTest {
 
         var e =
                 assertThrows(
-                        BcuCotizacionesUnknownException.class,
+                        BcuCotizacionesException.Unknown.class,
                         () -> client.cotizaciones(COTIZACIONES_REQUEST));
         assertTrue(e.getMessage().startsWith("Status desconocido 7"), e.getMessage());
     }
@@ -192,7 +192,7 @@ class BcuClientTest {
 
         var e =
                 assertThrows(
-                        BcuCotizacionesUnknownException.class,
+                        BcuCotizacionesException.Unknown.class,
                         () -> client.cotizaciones(COTIZACIONES_REQUEST));
         assertTrue(e.getMessage().contains("forma de arbitrar desconocida (5)"), e.getMessage());
     }
@@ -206,7 +206,7 @@ class BcuClientTest {
                 server.client(BcuClientConfig.builder().requestTimeout(Duration.ofMillis(300)));
 
         var inicio = System.nanoTime();
-        var e = assertThrows(BcuUltimoCierreUnknownException.class, client::ultimoCierre);
+        var e = assertThrows(BcuUltimoCierreException.Unknown.class, client::ultimoCierre);
         var duracion = Duration.ofNanos(System.nanoTime() - inicio);
 
         assertTrue(duracion.compareTo(Duration.ofSeconds(3)) < 0, duracion.toString());

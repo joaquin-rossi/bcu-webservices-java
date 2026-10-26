@@ -22,7 +22,7 @@ Requiere Java 25 o superior.
 Gradle:
 
 ```kotlin
-implementation("xyz.keibit:bcu-webservices:0.1.0")
+implementation("xyz.keibit:bcu-webservices:0.2.0")
 ```
 
 Maven:
@@ -31,7 +31,7 @@ Maven:
 <dependency>
     <groupId>xyz.keibit</groupId>
     <artifactId>bcu-webservices</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
@@ -45,28 +45,28 @@ var client = new BcuClient();
 client.ultimoCierre();
 // BcuUltimoCierreResponse[fecha=2026-10-23]
 
-client.monedas(new BcuMonedasRequest(BcuMonedasRequestGrupo.COTIZACIONES_LOCALES));
+client.monedas(new BcuMonedasRequest(BcuMonedasRequest.Grupo.COTIZACIONES_LOCALES));
 // BcuMonedasResponse[monedas=[
-//     BcuMonedasResponseMoneda[codigo=501, nombre=PESO ARG.BILLETE],
-//     BcuMonedasResponseMoneda[codigo=1001, nombre=REAL BILLETE],
-//     BcuMonedasResponseMoneda[codigo=2224, nombre=DLS. USA CABLE],
-//     BcuMonedasResponseMoneda[codigo=2225, nombre=DLS. USA BILLETE],
-//     BcuMonedasResponseMoneda[codigo=2230, nombre=DLS.PROMED.FONDO],
-//     BcuMonedasResponseMoneda[codigo=9700, nombre=UNIDAD PREVISIONAL],
-//     BcuMonedasResponseMoneda[codigo=9800, nombre=UNIDAD INDEXADA],
-//     BcuMonedasResponseMoneda[codigo=9900, nombre=UNIDAD REAJUSTAB]
+//     Moneda[codigo=501, nombre=PESO ARG.BILLETE],
+//     Moneda[codigo=1001, nombre=REAL BILLETE],
+//     Moneda[codigo=2224, nombre=DLS. USA CABLE],
+//     Moneda[codigo=2225, nombre=DLS. USA BILLETE],
+//     Moneda[codigo=2230, nombre=DLS.PROMED.FONDO],
+//     Moneda[codigo=9700, nombre=UNIDAD PREVISIONAL],
+//     Moneda[codigo=9800, nombre=UNIDAD INDEXADA],
+//     Moneda[codigo=9900, nombre=UNIDAD REAJUSTAB]
 // ]]
 
 client.cotizaciones(new BcuCotizacionesRequest(
         List.of(2225, 9800), // DLS. USA BILLETE, UNIDAD INDEXADA
         LocalDate.of(2026, 10, 22),
         LocalDate.of(2026, 10, 23),
-        BcuCotizacionesRequestGrupo.COTIZACIONES_LOCALES
+        BcuCotizacionesRequest.Grupo.COTIZACIONES_LOCALES
 ));
 // BcuCotizacionesResponse[lineas=[
-//     BcuCotizacionesResponseLinea[fecha=2026-10-22, monedaCodigo=2225, monedaNombre=DLS. USA BILLETE, monedaCodigoISO=DLS., monedaPaisEmisor=ESTADOS UNIDOS, tipoCambioCompra=40.083, tipoCambioVenta=40.083, arbitraje=1.0, formaArbitrar=UNIDAD_DE_MONEDA_POR_DOLARES_EEUU],
-//     BcuCotizacionesResponseLinea[fecha=2026-10-23, monedaCodigo=2225, monedaNombre=DLS. USA BILLETE, monedaCodigoISO=DLS., monedaPaisEmisor=ESTADOS UNIDOS, tipoCambioCompra=40.078, tipoCambioVenta=40.078, arbitraje=1.0, formaArbitrar=UNIDAD_DE_MONEDA_POR_DOLARES_EEUU],
-//     BcuCotizacionesResponseLinea[fecha=2026-10-22, monedaCodigo=9800, monedaNombre=UNIDAD INDEXADA, monedaCodigoISO=U.I., monedaPaisEmisor=URUGUAY, tipoCambioCompra=6.6734, tipoCambioVenta=6.6734, arbitraje=0.16649, formaArbitrar=DOLARES_EEUU_POR_UNIDAD_DE_MONEDA],
-//     BcuCotizacionesResponseLinea[fecha=2026-10-23, monedaCodigo=9800, monedaNombre=UNIDAD INDEXADA, monedaCodigoISO=U.I., monedaPaisEmisor=URUGUAY, tipoCambioCompra=6.6745, tipoCambioVenta=6.6745, arbitraje=0.166538, formaArbitrar=DOLARES_EEUU_POR_UNIDAD_DE_MONEDA]
+//     Linea[fecha=2026-10-22, monedaCodigo=2225, monedaNombre=DLS. USA BILLETE, monedaCodigoISO=DLS., monedaPaisEmisor=ESTADOS UNIDOS, tipoCambioCompra=40.083, tipoCambioVenta=40.083, arbitraje=1.0, formaArbitrar=UNIDAD_DE_MONEDA_POR_DOLARES_EEUU],
+//     Linea[fecha=2026-10-23, monedaCodigo=2225, monedaNombre=DLS. USA BILLETE, monedaCodigoISO=DLS., monedaPaisEmisor=ESTADOS UNIDOS, tipoCambioCompra=40.078, tipoCambioVenta=40.078, arbitraje=1.0, formaArbitrar=UNIDAD_DE_MONEDA_POR_DOLARES_EEUU],
+//     Linea[fecha=2026-10-22, monedaCodigo=9800, monedaNombre=UNIDAD INDEXADA, monedaCodigoISO=U.I., monedaPaisEmisor=URUGUAY, tipoCambioCompra=6.6734, tipoCambioVenta=6.6734, arbitraje=0.16649, formaArbitrar=DOLARES_EEUU_POR_UNIDAD_DE_MONEDA],
+//     Linea[fecha=2026-10-23, monedaCodigo=9800, monedaNombre=UNIDAD INDEXADA, monedaCodigoISO=U.I., monedaPaisEmisor=URUGUAY, tipoCambioCompra=6.6745, tipoCambioVenta=6.6745, arbitraje=0.166538, formaArbitrar=DOLARES_EEUU_POR_UNIDAD_DE_MONEDA]
 // ]]
 ```

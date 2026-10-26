@@ -28,7 +28,7 @@ class BcuClientIntegrationTest {
     @Test
     void monedas() {
         var monedas =
-                client.monedas(new BcuMonedasRequest(BcuMonedasRequestGrupo.COTIZACIONES_LOCALES))
+                client.monedas(new BcuMonedasRequest(BcuMonedasRequest.Grupo.COTIZACIONES_LOCALES))
                         .monedas();
 
         assertTrue(
@@ -48,7 +48,7 @@ class BcuClientIntegrationTest {
                                         List.of(UNIDAD_INDEXADA),
                                         fechaDesde,
                                         fechaHasta,
-                                        BcuCotizacionesRequestGrupo.COTIZACIONES_LOCALES))
+                                        BcuCotizacionesRequest.Grupo.COTIZACIONES_LOCALES))
                         .lineas();
 
         // La UI tiene cotización todos los días.
@@ -67,14 +67,14 @@ class BcuClientIntegrationTest {
         var futuro = LocalDate.now().plusYears(1);
 
         assertThrows(
-                BcuCotizacionesFechaSinDatosException.class,
+                BcuCotizacionesException.FechaSinDatos.class,
                 () ->
                         client.cotizaciones(
                                 new BcuCotizacionesRequest(
                                         List.of(DOLAR_BILLETE),
                                         futuro,
                                         futuro,
-                                        BcuCotizacionesRequestGrupo.COTIZACIONES_LOCALES)));
+                                        BcuCotizacionesRequest.Grupo.COTIZACIONES_LOCALES)));
     }
 
     @Test
@@ -83,14 +83,15 @@ class BcuClientIntegrationTest {
 
         var e =
                 assertThrows(
-                        BcuCotizacionesMonedaNoExisteException.class,
+                        BcuCotizacionesException.MonedaNoExiste.class,
                         () ->
                                 client.cotizaciones(
                                         new BcuCotizacionesRequest(
                                                 List.of(1234),
                                                 fecha,
                                                 fecha,
-                                                BcuCotizacionesRequestGrupo.COTIZACIONES_LOCALES)));
+                                                BcuCotizacionesRequest.Grupo
+                                                        .COTIZACIONES_LOCALES)));
         assertTrue(e.getMessage().contains("101"), e.getMessage());
     }
 
@@ -99,13 +100,13 @@ class BcuClientIntegrationTest {
         var fechaHasta = client.ultimoCierre().fecha();
 
         assertThrows(
-                BcuCotizacionesRangoFechasNoPermitidoException.class,
+                BcuCotizacionesException.RangoFechasNoPermitido.class,
                 () ->
                         client.cotizaciones(
                                 new BcuCotizacionesRequest(
                                         List.of(DOLAR_BILLETE),
                                         fechaHasta.minusYears(20),
                                         fechaHasta,
-                                        BcuCotizacionesRequestGrupo.COTIZACIONES_LOCALES)));
+                                        BcuCotizacionesRequest.Grupo.COTIZACIONES_LOCALES)));
     }
 }

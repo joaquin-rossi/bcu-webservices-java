@@ -7,8 +7,16 @@ import module java.base;
  *
  * @param monedas monedas del grupo
  */
-public record BcuMonedasResponse(List<BcuMonedasResponseMoneda> monedas) {
+public record BcuMonedasResponse(List<Moneda> monedas) {
     public BcuMonedasResponse {
         monedas = List.copyOf(monedas);
     }
+
+    /**
+     * Moneda.
+     *
+     * @param codigo código de la moneda, usado en {@link BcuCotizacionesRequest#monedas()}
+     * @param nombre nombre de la moneda
+     */
+    public record Moneda(int codigo, String nombre) {}
 }

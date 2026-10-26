@@ -7,11 +7,9 @@ import jakarta.xml.ws.handler.MessageContext;
 import xyz.keibit.bcu.BcuClient;
 import xyz.keibit.bcu.BcuClientConfig;
 import xyz.keibit.bcu.BcuCotizacionesRequest;
-import xyz.keibit.bcu.BcuCotizacionesRequestGrupo;
-import xyz.keibit.bcu.BcuCotizacionesResponseLinea;
+import xyz.keibit.bcu.BcuCotizacionesResponse;
 import xyz.keibit.bcu.BcuMonedasRequest;
-import xyz.keibit.bcu.BcuMonedasRequestGrupo;
-import xyz.keibit.bcu.BcuMonedasResponseMoneda;
+import xyz.keibit.bcu.BcuMonedasResponse;
 
 public class Main {
     public static void main() {
@@ -32,11 +30,11 @@ public class Main {
 
         // MONEDAS
 
-        var monedasRequest = new BcuMonedasRequest(BcuMonedasRequestGrupo.COTIZACIONES_LOCALES);
+        var monedasRequest = new BcuMonedasRequest(BcuMonedasRequest.Grupo.COTIZACIONES_LOCALES);
         IO.println("\n> monedas(%s)".formatted(monedasRequest));
         var monedasResponse = bcuClient.monedas(monedasRequest);
         monedasResponse.monedas().stream()
-                .sorted(Comparator.comparing(BcuMonedasResponseMoneda::codigo))
+                .sorted(Comparator.comparing(BcuMonedasResponse.Moneda::codigo))
                 .forEachOrdered(System.out::println);
 
         // COTIZACIONES
@@ -46,13 +44,13 @@ public class Main {
                         List.of(9800), // UI
                         ultimoCierreResponse.fecha().minusDays(7),
                         ultimoCierreResponse.fecha(),
-                        BcuCotizacionesRequestGrupo.COTIZACIONES_LOCALES);
+                        BcuCotizacionesRequest.Grupo.COTIZACIONES_LOCALES);
         IO.println("\n> cotizaciones(%s)".formatted(cotizacionesRequest));
         var cotizacionesResponse = bcuClient.cotizaciones(cotizacionesRequest);
         cotizacionesResponse.lineas().stream()
                 .sorted(
-                        Comparator.comparing(BcuCotizacionesResponseLinea::fecha)
-                                .thenComparing(BcuCotizacionesResponseLinea::monedaCodigo))
+                        Comparator.comparing(BcuCotizacionesResponse.Linea::fecha)
+                                .thenComparing(BcuCotizacionesResponse.Linea::monedaCodigo))
                 .forEachOrdered(System.out::println);
     }
 
