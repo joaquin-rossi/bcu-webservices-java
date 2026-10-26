@@ -14,6 +14,28 @@ Basado en https://www.bcu.gub.uy/Acerca-de-BCU/RD_Solicitudes_Informacion/Docume
 * El módulo `core` contiene el cliente `xyz.keibit.bcu.BcuClient`, que utiliza el código generado por wsimport.
 * El módulo `example` contiene un ejemplo de uso.
 
+## Instalación
+
+Requiere Java 25 o superior.
+
+Gradle:
+
+```kotlin
+implementation("xyz.keibit:bcu-webservices:0.1.0")
+```
+
+Maven:
+
+```xml
+<dependency>
+    <groupId>xyz.keibit</groupId>
+    <artifactId>bcu-webservices</artifactId>
+    <version>0.1.0</version>
+</dependency>
+```
+
+Si se usa el module path, agregar `requires xyz.keibit.bcu;` al `module-info.java`.
+
 ## Desarrollo
 
 Las versiones de Java y Gradle están fijadas en `mise.toml`.
