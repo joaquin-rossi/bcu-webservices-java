@@ -1,5 +1,9 @@
 # BCU WebServices
 
+[![CI](https://github.com/joaquin-rossi/bcu-webservices-java/actions/workflows/ci.yml/badge.svg)](https://github.com/joaquin-rossi/bcu-webservices-java/actions/workflows/ci.yml)
+[![BCU](https://github.com/joaquin-rossi/bcu-webservices-java/actions/workflows/bcu.yml/badge.svg)](https://github.com/joaquin-rossi/bcu-webservices-java/actions/workflows/bcu.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/xyz.keibit/bcu-webservices)](https://central.sonatype.com/artifact/xyz.keibit/bcu-webservices)
+
 > [!IMPORTANT]
 > Sin asociación con el Banco Central del Uruguay.
 
