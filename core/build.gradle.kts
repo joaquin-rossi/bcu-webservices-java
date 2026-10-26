@@ -62,7 +62,12 @@ spotless {
 
 mavenPublishing {
     publishToMavenCentral()
-    signAllPublications()
+    // Se firma solo si hay una clave configurada, para poder usar publishToMavenLocal sin GPG.
+    // Maven Central rechaza los artefactos sin firmar, así que publicar requiere la clave.
+    if (listOf("signingInMemoryKey", "signing.keyId", "signing.gnupg.keyName")
+            .any { providers.gradleProperty(it).isPresent }) {
+        signAllPublications()
+    }
 
     coordinates(group.toString(), "bcu-webservices", version.toString())
 

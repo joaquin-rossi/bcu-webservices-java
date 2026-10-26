@@ -1,0 +1,69 @@
+# Publica una versión en Maven Central y crea el release en GitHub.
+#
+# Para publicar:
+#   1. Actualizar `version` en gradle.properties y commitear.
+#   2. Crear y pushear el tag: git tag v0.1.0 && git push origin v0.1.0
+#
+# Secrets requeridos (Settings → Secrets and variables → Actions):
+#   MAVEN_CENTRAL_USERNAME, MAVEN_CENTRAL_PASSWORD  token de usuario de https://central.sonatype.com
+#   SIGNING_KEY                                     clave GPG privada, en formato ASCII armor
+#   SIGNING_KEY_PASSWORD                            contraseña de la clave GPG
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Verificar que el tag coincide con la versión
+        run: |
+          version=$(sed -n 's/^version=//p' gradle.properties)
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::El tag $GITHUB_REF_NAME no coincide con version=$version de gradle.properties"
+            exit 1
+          fi
+
+      # Sin clave el build omite la firma, y Maven Central rechazaría los artefactos.
+      - name: Verificar secrets
+        env:
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        run: |
+          for name in MAVEN_CENTRAL_USERNAME MAVEN_CENTRAL_PASSWORD SIGNING_KEY SIGNING_KEY_PASSWORD; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Falta el secret $name"
+              exit 1
+            fi
+          done
+
+      - uses: jdx/mise-action@v5
+      - uses: gradle/actions/setup-gradle@v6
+
+      - run: gradle build
+
+      - name: Publicar en Maven Central
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        run: gradle :core:publishAndReleaseToMavenCentral
+
+      - name: Crear release en GitHub
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --verify-tag --generate-notes

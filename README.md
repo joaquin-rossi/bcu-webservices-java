@@ -19,28 +19,10 @@ Basado en https://www.bcu.gub.uy/Acerca-de-BCU/RD_Solicitudes_Informacion/Docume
 Las versiones de Java y Gradle están fijadas en `mise.toml`.
 
 ```
-gradle build                          # compila, verifica el formato y corre los tests unitarios
-gradle spotlessApply                  # formatea el código
-gradle :core:integrationTest          # tests contra los webservices reales del BCU
-gradle :core:wsdl-download :core:wsimport   # regenera el cliente a partir de los WSDL del BCU
+gradle build                  # compila, verifica el formato y corre los tests unitarios
+gradle spotlessApply          # formatea el código
+gradle :core:integrationTest  # tests contra los webservices reales del BCU
 ```
-
-## Configuración
-
-`new BcuClient()` usa la configuración por defecto (timeouts de 10 s de conexión y 30 s de lectura). Para cambiarla:
-
-```java
-var bcuClient = new BcuClient(BcuClientConfig.builder()
-        .connectTimeout(Duration.ofSeconds(5))
-        .requestTimeout(Duration.ofSeconds(20))
-        .baseUrl(URI.create("https://cotizaciones.bcu.gub.uy/wscotizaciones/servlet/"))
-        .sslSocketFactory(sslContext.getSocketFactory())
-        // Para lo no contemplado (headers, handlers, propiedades de JAX-WS); se aplica a cada port.
-        .customizer(port -> port.getRequestContext().put(MessageContext.HTTP_REQUEST_HEADERS, headers))
-        .build());
-```
-
-Todos los campos son opcionales.
 
 ## Ejemplos
 
