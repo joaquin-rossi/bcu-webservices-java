@@ -1,0 +1,38 @@
+# Verifica periódicamente contra los webservices reales del BCU, que pueden cambiar sin aviso.
+name: BCU
+
+on:
+  schedule:
+    - cron: "0 12 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integration-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v5
+      - uses: gradle/actions/setup-gradle@v6
+
+      - run: gradle :core:integrationTest
+
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: integration-test-reports
+          path: core/build/reports/tests/
+
+  wsdl:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v5
+      - uses: gradle/actions/setup-gradle@v6
+
+      - run: gradle :core:wsdl-download
+
+      - name: Verificar que los WSDL no cambiaron
+        run: git diff --exit-code core/src/main/resources/wsdl

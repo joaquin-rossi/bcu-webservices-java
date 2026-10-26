@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<SOAP-ENV:Body>
+		<wsbcumonedas.ExecuteResponse xmlns="Cotiza">
+			<Salida xmlns="Cotiza">
+				<wsmonedasout.Linea xmlns="Cotiza">
+					<Codigo>501</Codigo>
+					<Nombre>PESO ARG.BILLETE</Nombre>
+				</wsmonedasout.Linea>
+				<wsmonedasout.Linea xmlns="Cotiza">
+					<Codigo>1001</Codigo>
+					<Nombre>REAL BILLETE</Nombre>
+				</wsmonedasout.Linea>
+				<wsmonedasout.Linea xmlns="Cotiza">
+					<Codigo>2224</Codigo>
+					<Nombre>DLS. USA CABLE</Nombre>
+				</wsmonedasout.Linea>
+				<wsmonedasout.Linea xmlns="Cotiza">
+					<Codigo>2225</Codigo>
+					<Nombre>DLS. USA BILLETE</Nombre>
+				</wsmonedasout.Linea>
+				<wsmonedasout.Linea xmlns="Cotiza">
+					<Codigo>2230</Codigo>
+					<Nombre>DLS.PROMED.FONDO</Nombre>
+				</wsmonedasout.Linea>
+				<wsmonedasout.Linea xmlns="Cotiza">
+					<Codigo>9700</Codigo>
+					<Nombre>UNIDAD PREVISIONAL</Nombre>
+				</wsmonedasout.Linea>
+				<wsmonedasout.Linea xmlns="Cotiza">
+					<Codigo>9800</Codigo>
+					<Nombre>UNIDAD INDEXADA</Nombre>
+				</wsmonedasout.Linea>
+				<wsmonedasout.Linea xmlns="Cotiza">
+					<Codigo>9900</Codigo>
+					<Nombre>UNIDAD REAJUSTAB</Nombre>
+				</wsmonedasout.Linea>
+			</Salida>
+		</wsbcumonedas.ExecuteResponse>
+	</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

@@ -2,10 +2,9 @@ import java.net.URI
 
 plugins {
     `java-library`
-}
-
-repositories {
-    mavenCentral()
+    alias(libs.plugins.lombok)
+    alias(libs.plugins.maven.publish)
+    alias(libs.plugins.spotless)
 }
 
 java {
@@ -14,14 +13,84 @@ java {
     }
 }
 
+lombok {
+    version = libs.versions.lombok
+}
+
 val jaxwsTools = configurations.create("jaxwsTools")
 dependencies {
-    annotationProcessor(libs.lombok)
-    compileOnly(libs.lombok)
     api(libs.jakarta.xml.ws.api)
     implementation(libs.jaxws.rt)
 
+    testImplementation(platform(libs.junit.bom))
+    testImplementation(libs.junit.jupiter)
+    testRuntimeOnly(libs.junit.platform.launcher)
+
     jaxwsTools(libs.jaxws.tools)
+}
+
+tasks.test {
+    useJUnitPlatform {
+        excludeTags("integration")
+    }
+}
+
+// Tests contra los webservices reales del BCU; no forman parte de `check` porque dependen de la red.
+val integrationTest = tasks.register<Test>("integrationTest") {
+    description = "Ejecuta los tests contra los webservices reales del BCU."
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    testClassesDirs = sourceSets.test.get().output.classesDirs
+    classpath = sourceSets.test.get().runtimeClasspath
+    useJUnitPlatform {
+        includeTags("integration")
+    }
+}
+
+tasks.javadoc {
+    // Se genera sin module-info para poder excluir el código de wsimport, que no es parte de la API.
+    modularity.inferModulePath = false
+    exclude("module-info.java", "xyz/keibit/bcu/wsdl/**")
+    (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:all,-missing", "-quiet")
+}
+
+spotless {
+    java {
+        targetExclude("src/main/java/xyz/keibit/bcu/wsdl/**")
+        googleJavaFormat().aosp()
+    }
+}
+
+mavenPublishing {
+    publishToMavenCentral()
+    signAllPublications()
+
+    coordinates(group.toString(), "bcu-webservices", version.toString())
+
+    pom {
+        name = "BCU WebServices"
+        description = "Cliente Java para los webservices SOAP de cotizaciones del Banco Central del Uruguay."
+        inceptionYear = "2025"
+        url = "https://github.com/joaquin-rossi/bcu-webservices-java"
+        licenses {
+            license {
+                name = "GNU Affero General Public License v3.0"
+                url = "https://www.gnu.org/licenses/agpl-3.0.txt"
+                distribution = "repo"
+            }
+        }
+        developers {
+            developer {
+                id = "joaquin-rossi"
+                name = "Joaquín Rossi"
+                url = "https://github.com/joaquin-rossi"
+            }
+        }
+        scm {
+            url = "https://github.com/joaquin-rossi/bcu-webservices-java"
+            connection = "scm:git:https://github.com/joaquin-rossi/bcu-webservices-java.git"
+            developerConnection = "scm:git:ssh://git@github.com/joaquin-rossi/bcu-webservices-java.git"
+        }
+    }
 }
 
 val wsdlDir = layout.projectDirectory.dir("src/main/resources/wsdl")
@@ -85,19 +154,19 @@ val taskWsdlDownload = tasks.register("wsdl-download") {
 val taskWsImportBcuCotizaciones = registerWsImportTask(
     "wsimport-bcu-cotizaciones",
     "cotizaciones.wsdl",
-    "bcu.wsdl.cotizaciones",
+    "xyz.keibit.bcu.wsdl.cotizaciones",
 )
 
 val taskWsImportBcuMonedas = registerWsImportTask(
     "wsimport-bcu-monedas",
     "monedas.wsdl",
-    "bcu.wsdl.monedas",
+    "xyz.keibit.bcu.wsdl.monedas",
 )
 
 val taskWsImportBcuUltimoCierre = registerWsImportTask(
     "wsimport-bcu-ultimocierre",
     "ultimocierre.wsdl",
-    "bcu.wsdl.ultimocierre",
+    "xyz.keibit.bcu.wsdl.ultimocierre",
 )
 
 val taskWsImport = tasks.register("wsimport") {

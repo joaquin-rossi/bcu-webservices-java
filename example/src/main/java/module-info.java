@@ -1,3 +1,3 @@
-module bcu.example {
-    requires bcu.webservices;
+module xyz.keibit.bcu.example {
+    requires xyz.keibit.bcu;
 }

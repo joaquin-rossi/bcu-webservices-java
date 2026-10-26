@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<SOAP-ENV:Body>
+		<wsbcucotizaciones.ExecuteResponse xmlns="Cotiza">
+			<Salida xmlns="Cotiza">
+				<respuestastatus>
+					<status>1</status>
+					<codigoerror>0</codigoerror>
+					<mensaje/>
+				</respuestastatus>
+				<datoscotizaciones>
+					<datoscotizaciones.dato xmlns="Cotiza">
+						<Fecha>2026-10-22</Fecha>
+						<Moneda>2225</Moneda>
+						<Nombre>DLS. USA BILLETE</Nombre>
+						<CodigoISO>DLS.</CodigoISO>
+						<Emisor>ESTADOS UNIDOS</Emisor>
+						<TCC>40.083000</TCC>
+						<TCV>40.083000</TCV>
+						<ArbAct>1.000000</ArbAct>
+						<FormaArbitrar>0</FormaArbitrar>
+					</datoscotizaciones.dato>
+					<datoscotizaciones.dato xmlns="Cotiza">
+						<Fecha>2026-10-23</Fecha>
+						<Moneda>2225</Moneda>
+						<Nombre>DLS. USA BILLETE</Nombre>
+						<CodigoISO>DLS.</CodigoISO>
+						<Emisor>ESTADOS UNIDOS</Emisor>
+						<TCC>40.078000</TCC>
+						<TCV>40.078000</TCV>
+						<ArbAct>1.000000</ArbAct>
+						<FormaArbitrar>0</FormaArbitrar>
+					</datoscotizaciones.dato>
+					<datoscotizaciones.dato xmlns="Cotiza">
+						<Fecha>2026-10-22</Fecha>
+						<Moneda>9800</Moneda>
+						<Nombre>UNIDAD INDEXADA</Nombre>
+						<CodigoISO>U.I.</CodigoISO>
+						<Emisor>URUGUAY</Emisor>
+						<TCC>6.673400</TCC>
+						<TCV>6.673400</TCV>
+						<ArbAct>0.166490</ArbAct>
+						<FormaArbitrar>1</FormaArbitrar>
+					</datoscotizaciones.dato>
+					<datoscotizaciones.dato xmlns="Cotiza">
+						<Fecha>2026-10-23</Fecha>
+						<Moneda>9800</Moneda>
+						<Nombre>UNIDAD INDEXADA</Nombre>
+						<CodigoISO>U.I.</CodigoISO>
+						<Emisor>URUGUAY</Emisor>
+						<TCC>6.674500</TCC>
+						<TCV>6.674500</TCV>
+						<ArbAct>0.166538</ArbAct>
+						<FormaArbitrar>1</FormaArbitrar>
+					</datoscotizaciones.dato>
+				</datoscotizaciones>
+			</Salida>
+		</wsbcucotizaciones.ExecuteResponse>
+	</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

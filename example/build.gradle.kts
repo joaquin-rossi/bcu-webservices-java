@@ -1,14 +1,11 @@
 plugins {
     application
-}
-
-repositories {
-    mavenCentral()
+    alias(libs.plugins.spotless)
 }
 
 application {
-    mainModule = "bcu.example"
-    mainClass = "bcu.example.Main"
+    mainModule = "xyz.keibit.bcu.example"
+    mainClass = "xyz.keibit.bcu.example.Main"
 }
 
 java {
@@ -19,4 +16,10 @@ java {
 
 dependencies {
     implementation(project(":core"))
+}
+
+spotless {
+    java {
+        googleJavaFormat().aosp()
+    }
 }
