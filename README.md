@@ -22,7 +22,7 @@ Requiere Java 25 o superior.
 Gradle:
 
 ```kotlin
-implementation("xyz.keibit:bcu-webservices:0.2.0")
+implementation("xyz.keibit:bcu-webservices:0.3.0")
 ```
 
 Maven:
@@ -31,7 +31,7 @@ Maven:
 <dependency>
     <groupId>xyz.keibit</groupId>
     <artifactId>bcu-webservices</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
 </dependency>
 ```
 
@@ -45,7 +45,7 @@ var client = new BcuClient();
 client.ultimoCierre();
 // BcuUltimoCierreResponse[fecha=2026-10-23]
 
-client.monedas(new BcuMonedasRequest(BcuMonedasRequest.Grupo.COTIZACIONES_LOCALES));
+client.monedas(BcuMonedasGrupo.COTIZACIONES_LOCALES);
 // BcuMonedasResponse[monedas=[
 //     Moneda[codigo=501, nombre=PESO ARG.BILLETE],
 //     Moneda[codigo=1001, nombre=REAL BILLETE],
@@ -57,12 +57,12 @@ client.monedas(new BcuMonedasRequest(BcuMonedasRequest.Grupo.COTIZACIONES_LOCALE
 //     Moneda[codigo=9900, nombre=UNIDAD REAJUSTAB]
 // ]]
 
-client.cotizaciones(new BcuCotizacionesRequest(
+client.cotizaciones(
         List.of(2225, 9800), // DLS. USA BILLETE, UNIDAD INDEXADA
         LocalDate.of(2026, 10, 22),
         LocalDate.of(2026, 10, 23),
-        BcuCotizacionesRequest.Grupo.COTIZACIONES_LOCALES
-));
+        BcuCotizacionesGrupo.COTIZACIONES_LOCALES
+);
 // BcuCotizacionesResponse[lineas=[
 //     Linea[fecha=2026-10-22, monedaCodigo=2225, monedaNombre=DLS. USA BILLETE, monedaCodigoISO=DLS., monedaPaisEmisor=ESTADOS UNIDOS, tipoCambioCompra=40.083, tipoCambioVenta=40.083, arbitraje=1.0, formaArbitrar=UNIDAD_DE_MONEDA_POR_DOLARES_EEUU],
 //     Linea[fecha=2026-10-23, monedaCodigo=2225, monedaNombre=DLS. USA BILLETE, monedaCodigoISO=DLS., monedaPaisEmisor=ESTADOS UNIDOS, tipoCambioCompra=40.078, tipoCambioVenta=40.078, arbitraje=1.0, formaArbitrar=UNIDAD_DE_MONEDA_POR_DOLARES_EEUU],

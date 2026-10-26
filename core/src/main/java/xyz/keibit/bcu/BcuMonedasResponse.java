@@ -15,7 +15,7 @@ public record BcuMonedasResponse(List<Moneda> monedas) {
     /**
      * Moneda.
      *
-     * @param codigo código de la moneda, usado en {@link BcuCotizacionesRequest#monedas()}
+     * @param codigo código de la moneda, usado en {@link BcuClient#cotizaciones}
      * @param nombre nombre de la moneda
      */
     public record Moneda(int codigo, String nombre) {}

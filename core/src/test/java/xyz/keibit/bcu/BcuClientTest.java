@@ -13,12 +13,10 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class BcuClientTest {
-    private static final BcuCotizacionesRequest COTIZACIONES_REQUEST =
-            new BcuCotizacionesRequest(
-                    List.of(2225, 9800),
-                    LocalDate.of(2026, 10, 22),
-                    LocalDate.of(2026, 10, 23),
-                    BcuCotizacionesRequest.Grupo.COTIZACIONES_LOCALES);
+    private static final List<Integer> CODIGOS = List.of(2225, 9800);
+    private static final LocalDate FECHA_DESDE = LocalDate.of(2026, 10, 22);
+    private static final LocalDate FECHA_HASTA = LocalDate.of(2026, 10, 23);
+    private static final BcuCotizacionesGrupo GRUPO = BcuCotizacionesGrupo.COTIZACIONES_LOCALES;
 
     private FakeBcuServer server;
     private BcuClient client;
@@ -65,9 +63,7 @@ class BcuClientTest {
     void monedas() {
         server.respond(MONEDAS, fixture("monedas.xml"));
 
-        var monedas =
-                client.monedas(new BcuMonedasRequest(BcuMonedasRequest.Grupo.COTIZACIONES_LOCALES))
-                        .monedas();
+        var monedas = client.monedas(BcuMonedasGrupo.COTIZACIONES_LOCALES).monedas();
 
         assertEquals(8, monedas.size());
         assertEquals(new BcuMonedasResponse.Moneda(501, "PESO ARG.BILLETE"), monedas.getFirst());
@@ -79,8 +75,10 @@ class BcuClientTest {
     void monedasErrorHttp() {
         server.respond(MONEDAS, 503, "Service Unavailable");
 
-        var request = new BcuMonedasRequest(BcuMonedasRequest.Grupo.TODOS);
-        var e = assertThrows(BcuMonedasException.Unknown.class, () -> client.monedas(request));
+        var e =
+                assertThrows(
+                        BcuMonedasException.Unknown.class,
+                        () -> client.monedas(BcuMonedasGrupo.TODOS));
         assertNotNull(e.getCause());
     }
 
@@ -90,7 +88,7 @@ class BcuClientTest {
     void cotizaciones() {
         server.respond(COTIZACIONES, fixture("cotizaciones.xml"));
 
-        var lineas = client.cotizaciones(COTIZACIONES_REQUEST).lineas();
+        var lineas = client.cotizaciones(CODIGOS, FECHA_DESDE, FECHA_HASTA, GRUPO).lineas();
 
         assertEquals(4, lineas.size());
         assertEquals(
@@ -114,7 +112,7 @@ class BcuClientTest {
     void cotizacionesEnviaElPedido() {
         server.respond(COTIZACIONES, fixture("cotizaciones.xml"));
 
-        client.cotizaciones(COTIZACIONES_REQUEST);
+        client.cotizaciones(CODIGOS, FECHA_DESDE, FECHA_HASTA, GRUPO);
 
         var request = server.lastRequest(COTIZACIONES);
         assertTrue(
@@ -133,7 +131,7 @@ class BcuClientTest {
             for (var zona : List.of("Pacific/Kiritimati", "Pacific/Pago_Pago")) {
                 TimeZone.setDefault(TimeZone.getTimeZone(zona));
 
-                var lineas = client.cotizaciones(COTIZACIONES_REQUEST).lineas();
+                var lineas = client.cotizaciones(CODIGOS, FECHA_DESDE, FECHA_HASTA, GRUPO).lineas();
 
                 assertEquals(LocalDate.of(2026, 10, 22), lineas.getFirst().fecha(), zona);
                 assertTrue(
@@ -166,7 +164,9 @@ class BcuClientTest {
         server.respond(
                 COTIZACIONES, fixture("cotizaciones-error.xml").formatted(0, codigoError, "Error"));
 
-        var e = assertThrows(tipo, () -> client.cotizaciones(COTIZACIONES_REQUEST));
+        var e =
+                assertThrows(
+                        tipo, () -> client.cotizaciones(CODIGOS, FECHA_DESDE, FECHA_HASTA, GRUPO));
         assertTrue(e.getMessage().contains("Error (código de error %d)".formatted(codigoError)));
     }
 
@@ -177,7 +177,7 @@ class BcuClientTest {
         var e =
                 assertThrows(
                         BcuCotizacionesException.Unknown.class,
-                        () -> client.cotizaciones(COTIZACIONES_REQUEST));
+                        () -> client.cotizaciones(CODIGOS, FECHA_DESDE, FECHA_HASTA, GRUPO));
         assertTrue(e.getMessage().startsWith("Status desconocido 7"), e.getMessage());
     }
 
@@ -193,8 +193,56 @@ class BcuClientTest {
         var e =
                 assertThrows(
                         BcuCotizacionesException.Unknown.class,
-                        () -> client.cotizaciones(COTIZACIONES_REQUEST));
+                        () -> client.cotizaciones(CODIGOS, FECHA_DESDE, FECHA_HASTA, GRUPO));
         assertTrue(e.getMessage().contains("forma de arbitrar desconocida (5)"), e.getMessage());
+    }
+
+    // VALIDACIONES
+
+    @Test
+    void cotizacionesMonedasInvalidas() {
+        assertThrows(
+                NullPointerException.class,
+                () -> client.cotizaciones(null, FECHA_DESDE, FECHA_HASTA, GRUPO));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> client.cotizaciones(List.of(), FECHA_DESDE, FECHA_HASTA, GRUPO));
+        assertThrows(
+                NullPointerException.class,
+                () ->
+                        client.cotizaciones(
+                                Arrays.asList(2225, null), FECHA_DESDE, FECHA_HASTA, GRUPO));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> client.cotizaciones(List.of(-1), FECHA_DESDE, FECHA_HASTA, GRUPO));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> client.cotizaciones(List.of(40_000), FECHA_DESDE, FECHA_HASTA, GRUPO));
+    }
+
+    @Test
+    void cotizacionesFechasInvalidas() {
+        assertThrows(
+                NullPointerException.class,
+                () -> client.cotizaciones(CODIGOS, null, FECHA_HASTA, GRUPO));
+        assertThrows(
+                NullPointerException.class,
+                () -> client.cotizaciones(CODIGOS, FECHA_DESDE, null, GRUPO));
+        var e =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> client.cotizaciones(CODIGOS, FECHA_HASTA, FECHA_DESDE, GRUPO));
+        assertEquals(
+                "fechaDesde (2026-10-23) no puede ser posterior a fechaHasta (2026-10-22)",
+                e.getMessage());
+    }
+
+    @Test
+    void grupoNull() {
+        assertThrows(
+                NullPointerException.class,
+                () -> client.cotizaciones(CODIGOS, FECHA_DESDE, FECHA_HASTA, null));
+        assertThrows(NullPointerException.class, () -> client.monedas(null));
     }
 
     // CONFIGURACIÓN

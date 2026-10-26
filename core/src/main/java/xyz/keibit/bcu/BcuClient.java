@@ -86,21 +86,56 @@ public final class BcuClient {
     /**
      * Consulta las cotizaciones de las monedas pedidas entre dos fechas.
      *
+     * @param monedas códigos de moneda, como los devueltos por {@link #monedas}
+     * @param fechaDesde primera fecha, inclusive
+     * @param fechaHasta última fecha, inclusive
+     * @param grupo grupo de monedas
+     * @throws IllegalArgumentException si {@code monedas} es vacía, contiene un código fuera de
+     *     rango o {@code fechaDesde} es posterior a {@code fechaHasta}
      * @throws BcuCotizacionesException si el webservice devuelve un error o no se puede invocar
      */
-    public BcuCotizacionesResponse cotizaciones(BcuCotizacionesRequest cotizacionesRequest) {
-        Objects.requireNonNull(cotizacionesRequest, "cotizacionesRequest no puede ser null");
+    public BcuCotizacionesResponse cotizaciones(
+            List<Integer> monedas,
+            LocalDate fechaDesde,
+            LocalDate fechaHasta,
+            BcuCotizacionesGrupo grupo) {
+        Objects.requireNonNull(monedas, "monedas no puede ser null");
+        if (monedas.isEmpty()) {
+            throw new IllegalArgumentException("monedas no puede ser vacía");
+        }
+        if (monedas.stream().anyMatch(Objects::isNull)) {
+            throw new NullPointerException("monedas no puede contener null");
+        }
+        // El webservice representa los códigos de moneda como xs:short.
+        for (var moneda : monedas) {
+            if (moneda < 0 || moneda > Short.MAX_VALUE) {
+                throw new IllegalArgumentException(
+                        "Código de moneda fuera de rango (0 a %d): %d"
+                                .formatted(Short.MAX_VALUE, moneda));
+            }
+        }
+        monedas = List.copyOf(monedas);
 
-        var monedas = new ArrayOfint();
-        for (var moneda : cotizacionesRequest.monedas()) {
-            monedas.getItem().add(moneda.shortValue());
+        Objects.requireNonNull(fechaDesde, "fechaDesde no puede ser null");
+        Objects.requireNonNull(fechaHasta, "fechaHasta no puede ser null");
+        if (fechaDesde.isAfter(fechaHasta)) {
+            throw new IllegalArgumentException(
+                    "fechaDesde (%s) no puede ser posterior a fechaHasta (%s)"
+                            .formatted(fechaDesde, fechaHasta));
+        }
+
+        Objects.requireNonNull(grupo, "grupo no puede ser null");
+
+        var monedasArray = new ArrayOfint();
+        for (var moneda : monedas) {
+            monedasArray.getItem().add(moneda.shortValue());
         }
 
         var cotizacionesIn = new Wsbcucotizacionesin();
-        cotizacionesIn.setMoneda(monedas);
-        cotizacionesIn.setFechaDesde(toXmlDate(cotizacionesRequest.fechaDesde()));
-        cotizacionesIn.setFechaHasta(toXmlDate(cotizacionesRequest.fechaHasta()));
-        cotizacionesIn.setGrupo(cotizacionesRequest.grupo().getValue());
+        cotizacionesIn.setMoneda(monedasArray);
+        cotizacionesIn.setFechaDesde(toXmlDate(fechaDesde));
+        cotizacionesIn.setFechaHasta(toXmlDate(fechaHasta));
+        cotizacionesIn.setGrupo(grupo.getValue());
 
         var cotizacionesReq = new WsbcucotizacionesExecute();
         cotizacionesReq.setEntrada(cotizacionesIn);
@@ -171,14 +206,15 @@ public final class BcuClient {
     /**
      * Consulta las monedas de un grupo.
      *
+     * @param grupo grupo de monedas
      * @throws BcuMonedasException si el webservice no se puede invocar o devuelve una respuesta
      *     inesperada
      */
-    public BcuMonedasResponse monedas(BcuMonedasRequest monedasRequest) {
-        Objects.requireNonNull(monedasRequest, "monedasRequest no puede ser null");
+    public BcuMonedasResponse monedas(BcuMonedasGrupo grupo) {
+        Objects.requireNonNull(grupo, "grupo no puede ser null");
 
         var monedasIn = new Wsmonedasin();
-        monedasIn.setGrupo(monedasRequest.grupo().getValue());
+        monedasIn.setGrupo(grupo.getValue());
 
         var monedasReq = new WsbcumonedasExecute();
         monedasReq.setEntrada(monedasIn);
